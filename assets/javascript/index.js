@@ -23,25 +23,36 @@ $(".btn").on("click", function(event){
   employeeName = $("#inputEmployeeName").val().trim();
   employeeRole = $("#inputRole").val().trim();
   startDate = $("#inputStartDate").val().trim();
-  monthlyRate = $("#inputEmployeMonthlyRate").val().trim();
+  monthlyRate = $("#inputEmployeeMonthlyRate").val().trim();
 
   database.ref().push({
     employeeName: employeeName,
     employeeRole: employeeRole,
     startDate: startDate,
     monthlyRate: monthlyRate,
+    dateAdded: firebase.database.ServerValue.TIMESTAMP,
   });
+
+  // for (var database = i; i < database.length; i++) {
+  //   var newTableRow = ("#test").append(database.length);
+  // }
 });
 
-  database.ref().on("value", function(snapshot){
-    console.log(snapshot.val());
+  database.ref().orderByChild("dateAdded").on("child_added", function(childSnapshot){
+    console.log("+- calling child_added");
 
-    console.log(snapshot.value().employeeName);
-    console.log(snapshot.value().employeeRole);
-    console.log(snapshot.value().startDate);
-    console.log(snapshot.value().monthlyRate);
+    console.log(childSnapshot.val().employeeName);
+    console.log(childSnapshot.val().employeeRole);
+    console.log(childSnapshot.val().startDate);
+    console.log(childSnapshot.val().monthlyRate);
+    console.log(childSnapshot.val().dateAdded);
 
-    $("#inputEmployeeName").text(snapshot.val().employeeName);
+    var e = $("<tr>");
+    $("tbody").append(e);
+    $(e).append("<td>" + childSnapshot.val().employeeName);
+    $(e).append("<td>" + childSnapshot.val().employeeRole);
+    $(e).append("<td>" + childSnapshot.val().startDate);
+    $(e).append("<td>" + childSnapshot.val().monthlyRate);
 
   }, function(errorObject){
     console.log("The read failed: " + errorObject);
